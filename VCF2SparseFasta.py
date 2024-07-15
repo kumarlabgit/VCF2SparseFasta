@@ -1,8 +1,6 @@
 import argparse
 import os
-import shutil
 import subprocess
-import sys
 import math
 
 bcft_path = "~/VCFconverter/bcftools/bcftools"
@@ -76,28 +74,6 @@ def main(args):
 				for sample_id in sample_ids:
 					file.write(">{}\n".format(sample_id))
 					file.write("{}\n".format(fasta_dict[sample_id]))
-
-
-
-
-	# fasta_dict = {sample_id: "" for sample_id in sample_ids}
-	# pos_list = sorted(gt_dict.keys())
-	# with open(os.path.splitext(args.output)[0] + ".positions.txt", 'w') as file:
-	# 	for pos in pos_list:
-	# 		for [sample_id, sample_idx] in zip(sample_ids, range(0,len(sample_ids))):
-	# 			fasta_dict[sample_id] += gt_dict[pos][sample_idx + 1]
-	# 		file.write("{}\n".format(pos))
-	# if args.chunk_size is None:
-	# 	args.chunk_size = len(gt_dict)
-	# for chunk_idx in range(0, math.ceil(len(gt_dict) / args.chunk_size)):
-	# 	start_pos_idx = chunk_idx * args.chunk_size
-	# 	end_pos_idx = (chunk_idx+1) * args.chunk_size
-	# 	end_pos_idx = min(end_pos_idx, len(pos_list))
-	# 	with open(os.path.splitext(args.output)[0] + ".{}-{}".format(pos_list[start_pos_idx], pos_list[end_pos_idx-1]) + os.path.splitext(args.output)[1], 'w') as file:
-	# 		for sample_id in sample_ids:
-	# 			file.write(">{}\n".format(sample_id))
-	# 			file.write("{}\n".format(fasta_dict[sample_id][start_pos_idx:end_pos_idx]))
-	# os.remove(temp_path)
 
 
 if __name__ == '__main__':
