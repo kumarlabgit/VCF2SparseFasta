@@ -64,13 +64,18 @@ def main(args):
 		while len(gt_dict) > args.chunk_size or (last_pos >= region_end and len(gt_dict) > 0):
 			fasta_dict = {sample_id: "" for sample_id in sample_ids}
 			pos_list = sorted(gt_dict.keys())[0:args.chunk_size]
-			with open(os.path.splitext(args.output)[0] + ".{}_{}-{}".format(region_name, pos_list[0], pos_list[-1]) + ".positions.txt", 'w') as file:
+			pos_map_fname = os.path.splitext(args.output)[0] + ".{}_{}-{}".format(region_name, pos_list[0], pos_list[-1]) + ".positions.txt"
+			fasta_fname = os.path.splitext(args.output)[0] + ".{}-{}".format(pos_list[0], pos_list[-1]) + os.path.splitext(args.output)[1]
+			with open(pos_map_fname, 'w') as file:
+				fasta_pos = 0
 				for pos in pos_list:
 					for [sample_id, sample_idx] in zip(sample_ids, range(0, len(sample_ids))):
 						fasta_dict[sample_id] += gt_dict[pos][sample_idx + 1]
-					file.write("{}\n".format(pos))
+					var_coord = "{}:{}".format(region_name, pos)
+					file.write("{}_{}\t{}\n".format(os.path.splitext(fasta_fname)[0], fasta_pos, var_coord))
 					del gt_dict[pos]
-			with open(os.path.splitext(args.output)[0] + ".{}-{}".format(pos_list[0], pos_list[-1]) + os.path.splitext(args.output)[1], 'w') as file:
+					fasta_pos += 1
+			with open(fasta_fname, 'w') as file:
 				for sample_id in sample_ids:
 					file.write(">{}\n".format(sample_id))
 					file.write("{}\n".format(fasta_dict[sample_id]))
