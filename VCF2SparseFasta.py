@@ -11,6 +11,10 @@ hg38_chrom_sizes = {"chr1": 249000000, "chr2": 243000000, "chr3": 199000000, "ch
 
 
 def main(args):
+	if args.output is None:
+		args.output = os.path.splitext(os.path.basename(args.vcf_path))[0].replace(".vcf", "")
+	if not os.path.exists(args.output):
+		os.mkdir(args.output)
 	if args.end is None:
 		args.end = hg38_chrom_sizes[args.chrom]
 	[region_name, region_start, region_end] = [args.chrom, args.start, args.end]
@@ -64,15 +68,15 @@ def main(args):
 		while len(gt_dict) > args.chunk_size or (last_pos >= region_end and len(gt_dict) > 0):
 			fasta_dict = {sample_id: "" for sample_id in sample_ids}
 			pos_list = sorted(gt_dict.keys())[0:args.chunk_size]
-			pos_map_fname = os.path.splitext(args.output)[0] + ".{}_{}-{}".format(region_name, pos_list[0], pos_list[-1]) + ".positions.txt"
-			fasta_fname = os.path.splitext(args.output)[0] + ".{}-{}".format(pos_list[0], pos_list[-1]) + os.path.splitext(args.output)[1]
+			pos_map_fname = os.path.join(args.output, "{}_{}-{}".format(region_name, pos_list[0], pos_list[-1]) + "_positions.txt")
+			fasta_fname = os.path.join(args.output, "{}_{}-{}".format(region_name, pos_list[0], pos_list[-1]) + ".fasta")
 			with open(pos_map_fname, 'w') as file:
 				fasta_pos = 0
 				for pos in pos_list:
 					for [sample_id, sample_idx] in zip(sample_ids, range(0, len(sample_ids))):
 						fasta_dict[sample_id] += gt_dict[pos][sample_idx + 1]
 					var_coord = "{}:{}".format(region_name, pos)
-					file.write("{}_{}\t{}\n".format(os.path.splitext(fasta_fname)[0], fasta_pos, var_coord))
+					file.write("{}_{}\t{}\n".format(os.path.splitext(os.path.basename(fasta_fname))[0], fasta_pos, var_coord))
 					del gt_dict[pos]
 					fasta_pos += 1
 			with open(fasta_fname, 'w') as file:
@@ -92,6 +96,4 @@ if __name__ == '__main__':
 	parser.add_argument("--query_size", help="Coordinate span when querying VCF.", type=int, default=1000000)
 	parser.add_argument("--verbosity", help="Level of verbosity.", type=int, default=1)
 	args = parser.parse_args()
-	if args.output is None:
-		args.output = "{}.fasta".format(os.path.splitext(args.vcf_path)[0])
 	main(args)
