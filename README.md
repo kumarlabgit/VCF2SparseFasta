@@ -9,7 +9,7 @@ Install bcftools: https://samtools.github.io/bcftools/howtos/install.html
 Clone this repo:
 	git clone https://github.com/kumarlabgit/VCF2SparseFasta
 
-Replace line 8 in VCF2SparseFasta.py with the path to the installed bcftools executable.
+Replace line 6 in VCF2SparseFasta.py with the path to the installed bcftools executable.
 
 
 
