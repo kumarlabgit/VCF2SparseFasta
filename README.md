@@ -16,7 +16,7 @@ Replace line 8 in VCF2SparseFasta.py with the path to the installed bcftools exe
 ## Usage ##
 
 	cd VCF2SparseFasta
-	python VCF2SparseFasta.py input_file_chr21.vcf chr21
+	python VCF2SparseFasta.py input_file_chr21.vcf.gz 21
 
 By default, output will be split into FASTA files with at most 5000 positions, this can be changed with the --chunk_size parameter.
 
