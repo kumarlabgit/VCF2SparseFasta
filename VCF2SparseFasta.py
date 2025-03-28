@@ -15,6 +15,24 @@ hg38_chrom_sizes = {"chr1": 249000000, "chr2": 243000000, "chr3": 199000000, "ch
 
 
 def main(args):
+	if os.path.splitext(args.vcf_path)[1] == ".vcf":
+		if os.path.exists(args.vcf_path + ".gz"):
+			print("Compressed version already exists, switching to {}.".format(args.vcf_path + ".gz"))
+			args.vcf_path = args.vcf_path + ".gz"
+		else:
+			print("Compressing to .gz format for indexing")
+			bcft_cmd = "{}*view*{}*-Oz*-o*{}".format(bcft_path, args.vcf_path, args.vcf_path + ".gz")
+			subprocess.run(bcft_cmd.replace("*", " "), shell=True)
+			args.vcf_path = args.vcf_path + ".gz"
+	if os.path.splitext(args.vcf_path)[1] == ".gz" and os.path.splitext(os.path.splitext(args.vcf_path)[0])[1] == ".vcf":
+		if os.path.exists(args.vcf_path + ".tbi"):
+			print("Index file {} detected.".format(args.vcf_path + ".tbi"))
+		else:
+			print("Generating index file.")
+			bcft_cmd = "{}*index*-t*{}".format(bcft_path, args.vcf_path, args.vcf_path)
+			subprocess.run(bcft_cmd.replace("*", " "), shell=True)
+	else:
+		raise Exception("Please specify a *.vcf or *.vcf.gz file.")
 	if args.output is None:
 		args.output = os.path.splitext(os.path.basename(args.vcf_path))[0].replace(".vcf", "")
 	if not os.path.exists(args.output):
