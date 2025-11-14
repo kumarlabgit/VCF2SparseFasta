@@ -3,8 +3,8 @@ import os
 import subprocess
 import math
 
-#bcft_path = "~/VCFconverter/bcftools/bcftools"
-bcft_path = "~/bcftools/bcftools"
+bcft_path = "~/VCFconverter/bcftools/bcftools"
+#bcft_path = "~/bcftools/bcftools"
 hg38_chrom_sizes = {"chr1": 249000000, "chr2": 243000000, "chr3": 199000000, "chr4": 191000000, "chr5": 182000000, "chr6": 171000000, "chr7": 160000000,
 					"chr8": 146000000, "chr9": 139000000, "chr10": 134000000, "chr11": 136000000, "chr12": 134000000, "chr13": 115000000, "chr14": 108000000,
 					"chr15": 102000000, "chr16": 91000000, "chr17": 84000000, "chr18": 81000000, "chr19": 59000000, "chr20": 65000000, "chr21": 47000000,
@@ -61,7 +61,6 @@ def main(args):
 				bcft_cmd = "{}*-r*{}".format(bcft_cmd, region)
 			if header is None and args.verbosity > 0:
 				print(bcft_cmd.replace("*", " "))
-
 			if args.verbosity > 0:
 				if args.bed is not None:
 					print("Querying bed file {}.".format(args.bed))
@@ -74,11 +73,16 @@ def main(args):
 			else:
 				region_name_set = True
 			if header is None:
-				header = [x[x.find("]")+1:] for x in file.readline().strip().split('\t')]
-				sample_ids = header[4:]
+				line = "-"
+				while line[0] != "#":
+					line = file.readline().strip()
+				header = [x[x.find("]")+1:] for x in line.split('\t')]
+				sample_ids = [sample_id.replace(":GT", "") for sample_id in header[4:]]
 			else:
 				file.readline()
 			for line in file.readlines():
+				if line[0] == "#":
+					continue
 				data = line.strip().split('\t')
 				if int(data[1]) in gt_dict.keys():
 					[ref, alt] = data[2:4]
